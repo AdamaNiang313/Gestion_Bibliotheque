@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $fileDestination = 'uploads/' . $fileName;
             move_uploaded_file($fileTmpName, $fileDestination);
         }
+        
     }
 
         # code...
