@@ -1,12 +1,12 @@
 <?php
     // Fetch the user data
     $id = $_GET['id'];
+    $sql_role = "SELECT * FROM role";
     $sql = "SELECT * FROM user WHERE id = $id";
     $result = mysqli_query($connexion, $sql);
     $user = mysqli_fetch_assoc($result);
 
     // Fetch the role data
-    $sql_role = "SELECT * FROM role";
     $roles = mysqli_query($connexion, $sql_role);
 ?>
 
@@ -18,7 +18,7 @@
         <label for="prenom">Prénom</label>
         <input type="text" name="prenom" class="form-control" value="<?= $user['prenom'] ?>">
         <label for="email">Email</label>
-        <input type="number" name="email" class="form-control" value="<?= $user['email'] ?>">
+        <input type="text" name="email" class="form-control" value="<?= $user['email'] ?>">
         <label for="login">Login</label>
         <input type="text" name="login" class="form-control" value="<?= $user['login'] ?>">
         <label for="password">Password</label>

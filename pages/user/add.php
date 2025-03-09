@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $login = $_POST['login'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-    $sql = "INSERT INTO user (nom, prenom, email, id_r, login, password) VALUES ('$nom', '$prenom','$email' ,'$id_r' , '$login', '$password')";
+    $sql = "INSERT INTO user (nom, prenom, email, id_r, login, password ) VALUES ('$nom', '$prenom', '$email', '$id_r', '$login', '$password')";
     
     if (mysqli_query($connexion, $sql)) {
         envoyerEmailInscription($email, $_POST['password']); // Appel de la fonction pour envoyer l'email
