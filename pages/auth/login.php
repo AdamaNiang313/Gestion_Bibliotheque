@@ -42,7 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } 
 
             if ($user['count'] == 0) {
-                header('Location: changePasswordAndLogin.php');
+                header('Location: index.php?action=changePasswordAndLogin');
+                exit();
             }
             
             else {

@@ -23,6 +23,7 @@
             require_once 'database.php';
             
             session_start();
+            
 
             if (isset($_GET['action'])) {
                 require_once 'shared/navbar.php';
@@ -37,6 +38,9 @@
                     $sql="DELETE FROM role where id = $id";
                     mysqli_query($connexion,$sql);
                     header('location:index.php?action=listRole');
+                }
+                if ($_GET['action'] == "changePasswordAndLogin.php") {
+                    require_once './pages/auth/changePasswordAndLogin.php';
                 }
 
                 if ($_GET['action'] == "editRole") {

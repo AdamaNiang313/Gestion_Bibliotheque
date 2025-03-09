@@ -8,7 +8,6 @@ require __DIR__ . '/PHPMailer-master/src/SMTP.php';
 
 function envoyerEmailInscription($email, $nom) {
     $mail = new PHPMailer(true);
-
     try {
         // Configuration du serveur SMTP
         $mail->isSMTP();
