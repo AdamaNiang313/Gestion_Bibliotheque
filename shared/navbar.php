@@ -1,9 +1,8 @@
 <?php
-//session_start();
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-light px-4 text-light shadow-sm fixed-top" style="background-color: rgb(0, 174, 255);">
-  <a class="navbar-brand text-light fw-bold" href="?action=acceuil">
+  <a class="navbar-brand text-light fw-bold" href="#">
     <i class="fas fa-school"></i> ECOLE IIBS
   </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,7 +24,17 @@
       </li>
       <li class="nav-item">
         <a href="?action=listAuteur" class="btn btn-outline-light btn-hover-animation" role="button" data-bs-toggle="button">
-          <i class="fas fa-book"></i> Liste Acteur
+          <i class="fas fa-book"></i> Liste Acteurs
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="?action=listLivre" class="btn btn-outline-light btn-hover-animation" role="button" data-bs-toggle="button">
+          <i class="fas fa-book"></i> Liste Livres
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="?action=listRayon" class="btn btn-outline-light btn-hover-animation" role="button" data-bs-toggle="button">
+          <i class="fas fa-book"></i> Liste Rayons
         </a>
       </li>
     </ul>
@@ -34,7 +43,8 @@
     <ul class="navbar-nav">
       <li class="nav-item">
         <a class="nav-link text-light fw-bold" href="" name="nom" value="">
-          <i class="fas fa-user"></i> <?= $_SESSION['photo'] . " " .  $_SESSION['prenom'] . " " . $_SESSION['nom']; ?>
+          <img src="<?= $_SESSION['photo'] ?>" alt="" style="width: 30px; height: 30px; border-radius: 50%;">
+          <?= $_SESSION['prenom'] . " " . $_SESSION['nom']; ?>
         </a>
       </li>
       <li class="nav-item">

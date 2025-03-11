@@ -133,12 +133,139 @@
             $count = $_SESSION['count'];
             $password = $_POST['password'];
             $new_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-            $sql = "UPDATE user SET password = '$new_password', count = 1 WHERE id = '$id'";
+            $image = null;
+            // Handle image upload
+            if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+                $image = basename($_FILES['photo']['name']);
+                $temp_name = $_FILES['photo']['tmp_name'];
+                $target_dir = 'uploads/';
+                $file_path = $target_dir . $file_name;
+        
+                // Vérifie le type de fichier
+                $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+                $file_type = mime_content_type($temp_name);
+        
+                if (in_array($file_type, $allowed_types)) {
+                    // Vérifie la taille du fichier (5 Mo maximum)
+                    if ($_FILES['photo']['size'] <= 5 * 1024 * 1024) {
+                        // Déplace le fichier uploadé
+                        if (move_uploaded_file($temp_name, $file_path)) {
+                            $photo = $file_name;
+                        } else {
+                            echo "<div class='alert alert-danger'>Erreur lors du déplacement du fichier.</div>";
+                        }
+                    } else {
+                        echo "<div class='alert alert-warning'>Le fichier est trop volumineux. Taille maximale : 5 Mo.</div>";
+                    }
+                } else {
+                    echo "<div class='alert alert-warning'>Type de fichier non autorisé. Formats acceptés : JPEG, PNG, GIF.</div>";
+                }
+            }
+    // Insertion du livre dans la base de données
+            $sql = "UPDATE user SET password = '$new_password',photo = $image, count = 1 WHERE id = '$id'";
             mysqli_query($connexion, $sql);
             header('location:index.php?action=listUser');
         }
         if ($_GET['action'] == "changePasswordAndLogin") {
             require_once './pages/auth/changePasswordAndLogin.php';
+        }
+
+        // Gestion des livres
+        if ($_GET['action'] == "addLivre") {
+            require_once './pages/livres/add.php';
+        }
+        if ($_GET['action'] == "listLivre") {
+            require_once './pages/livres/list.php';
+        }
+        if ($_GET['action'] == "deleteLivre") {
+            $id = $_GET['id'];
+            $sql = "DELETE FROM livre WHERE id = $id";
+            mysqli_query($connexion, $sql);
+            header('location:index.php?action=listLivre');
+        }
+        if ($_GET['action'] == "editLivre") {
+            $id = $_GET['id'];
+            $sql = "SELECT * FROM livre WHERE id = $id";
+            $result = mysqli_query($connexion, $sql);
+            if ($result) {
+                $livre = mysqli_fetch_assoc($result);
+            } else {
+                echo "Erreur: " . mysqli_error($connexion);
+            }
+            require_once './pages/livres/edit.php';
+        }
+        if ($_GET['action'] == "updateLivre") {
+            $id = $_POST['id'];
+            $titre = htmlspecialchars($_POST['titre']);
+            $auteur = htmlspecialchars($_POST['auteur']);
+            $description = htmlspecialchars($_POST['description']);
+            $date_publication = $_POST['date_publication'];
+            $image = $livre['image']; // Conserver l'image actuelle par défaut
+
+            // Gestion de l'upload de l'image
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $file_name = $_FILES['image']['name'];
+                $temp_name = $_FILES['image']['tmp_name'];
+                $file_path = "./auth/uploads/" . $file_name;
+
+                $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+                if (in_array($_FILES['image']['type'], $allowed_types)) {
+                    if (move_uploaded_file($temp_name, $file_path)) {
+                        $image = $file_name;
+                    } else {
+                        echo "<div class='alert alert-danger'>Erreur lors du déplacement du fichier.</div>";
+                    }
+                } else {
+                    echo "<div class='alert alert-warning'>Type de fichier non autorisé.</div>";
+                }
+            }
+
+            // Mise à jour du livre dans la base de données
+            $sql = "UPDATE livre 
+                    SET titre = '$titre', auteur = '$auteur', description = '$description', date_publication = '$date_publication', image = '$image' 
+                    WHERE id = $id";
+            if (mysqli_query($connexion, $sql)) {
+                header('location:livre.php?action=listLivre');
+                exit;
+            } else {
+                echo "<div class='alert alert-danger'>Erreur lors de la mise à jour du livre.</div>";
+            }
+        }
+
+        // Gestion des rayons
+        if ($_GET['action'] == "addRayon") {
+            require_once './pages/rayon/add.php';
+        }
+        if ($_GET['action'] == "listRayon") {
+            require_once './pages/rayon/list.php';
+        }
+        if ($_GET['action'] == "deleteRayon") {
+            $id = $_GET['code'];
+            $sql = "DELETE FROM rayon WHERE code = $code";
+            mysqli_query($connexion, $sql);
+            header('location:index.php?action=listRayon');
+        }
+        if ($_GET['action'] == "editRayon") {
+            $code = $_GET['code'];
+            $sql = "SELECT * FROM rayon WHERE code = $code";
+            $result = mysqli_query($connexion, $sql);
+            if ($result) {
+                $rayon = mysqli_fetch_assoc($result);
+            } else {
+                echo "Erreur: ". mysqli_error($connexion);
+            }
+            require_once './pages/rayon/edit.php';
+        }
+        if ($_GET['action'] == "updateRayon") {
+            $code = $_POST['code'];
+            $libelle = htmlspecialchars($_POST['libelle']);
+            $sql = "UPDATE rayon SET libelle = '$libelle' WHERE code = $code";
+            if (mysqli_query($connexion, $sql)) {
+                header('Location: index.php?action=listRayon');
+            }
+        }
+        if ($_GET['action'] == "listRayon") {
+            require_once './pages/rayon/list.php';
         }
 
         // Déconnexion
