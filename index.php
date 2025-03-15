@@ -22,6 +22,7 @@
 
     <body>
     <?php
+    ob_start();
     session_start(); // Démarre la session
     require_once 'database.php';
 
@@ -40,6 +41,7 @@
             $sql = "DELETE FROM role WHERE id = $id";
             mysqli_query($connexion, $sql);
             header('location:index.php?action=listRole');
+            exit();
         }
         if ($_GET['action'] == "editRole") {
             $id = $_GET['id'];
@@ -56,6 +58,7 @@
             $sql = "UPDATE role SET libelle = '$libelle' WHERE id = $id";
             if (mysqli_query($connexion, $sql)) {
                 header('Location: index.php?action=listRole');
+                exit();
             }
         }
 
@@ -68,6 +71,7 @@
             $sql = "DELETE FROM user WHERE id = $id";
             mysqli_query($connexion, $sql);
             header('location:index.php?action=listUser');
+            exit();
         }
         if ($_GET['action'] == "addUser") {
             require_once './pages/user/add.php';
@@ -89,7 +93,8 @@
             extract($_POST);
             $sql = "UPDATE user SET nom ='$nom', prenom='$prenom', age=$age WHERE id = $id";
             mysqli_query($connexion, $sql);
-            header('location:index.php?action=listUser');
+            header("location:index.php?action=listUser");
+            exit();
         }
 
         // Gestion des auteurs
@@ -104,6 +109,7 @@
             $sql = "DELETE FROM auteur WHERE code = $code";
             mysqli_query($connexion, $sql);
             header('location:index.php?action=listAuteur');
+            exit();
         }
         if ($_GET['action'] == "editAuteur") {
             $code = $_GET['code'];
@@ -124,6 +130,7 @@
             $sql = "UPDATE auteur SET nom = '$nom', prenom = '$prenom', profession = '$profession' WHERE code = $code";
             if (mysqli_query($connexion, $sql)) {
                 header('Location: index.php?action=listAuteur');
+                exit();
             }
         }
 
@@ -165,6 +172,7 @@
             $sql = "UPDATE user SET password = '$new_password',photo = $image, count = 1 WHERE id = '$id'";
             mysqli_query($connexion, $sql);
             header('location:index.php?action=listUser');
+            exit();
         }
         if ($_GET['action'] == "changePasswordAndLogin") {
             require_once './pages/auth/changePasswordAndLogin.php';
@@ -175,6 +183,7 @@
             require_once './pages/livres/add.php';
         }
         if ($_GET['action'] == "listLivre") {
+            
             require_once './pages/livres/list.php';
         }
         if ($_GET['action'] == "deleteLivre") {
@@ -182,6 +191,7 @@
             $sql = "DELETE FROM livre WHERE id = $id";
             mysqli_query($connexion, $sql);
             header('location:index.php?action=listLivre');
+            exit();
         }
         if ($_GET['action'] == "editLivre") {
             $id = $_GET['id'];
@@ -240,10 +250,12 @@
             require_once './pages/rayon/list.php';
         }
         if ($_GET['action'] == "deleteRayon") {
-            $id = $_GET['code'];
+            $code = $_GET['code'];
             $sql = "DELETE FROM rayon WHERE code = $code";
             mysqli_query($connexion, $sql);
-            header('location:index.php?action=listRayon');
+            header('Location: index.php?action=listRayon');
+            exit();
+
         }
         if ($_GET['action'] == "editRayon") {
             $code = $_GET['code'];
@@ -262,20 +274,37 @@
             $sql = "UPDATE rayon SET libelle = '$libelle' WHERE code = $code";
             if (mysqli_query($connexion, $sql)) {
                 header('Location: index.php?action=listRayon');
+                exit();
             }
         }
         if ($_GET['action'] == "listRayon") {
             require_once './pages/rayon/list.php';
         }
 
+        // Gestion des exemplaires RP
+        if ($_GET['action'] == "addExemplaire") {
+            require_once './pages/RP/add.php';
+        }
+        if ($_GET['action'] == "listExemplaire") {
+            require_once './pages/RP/list.php';
+        }
+
+        //Gestion emprunt adherant
+        if ($_GET['action'] == "listEmprunt") {
+            require_once './pages/emprunt/list.php';
+        }
+
         // Déconnexion
         if ($_GET['action'] == "deconnexion") {
             session_destroy();
             header('location:index.php');
+            exit();
         }
     } else {
         require_once './pages/auth/login.php';
     }
+
+    ob_end_flush();
 ?>
     </body>
 </html>

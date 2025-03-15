@@ -47,20 +47,84 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
+<!-- Inclure Font Awesome via CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <div class="container">
-    <h2 class="mt-5">Login</h2>
-    <form action="#" method="post" class="mt-3">
-        <div class="form-group">
-            <label for="login">Login:</label>
-            <input type="text" id="login" name="login" class="form-control" required>
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4 mt-5">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">
+                        <i class="fas fa-sign-in-alt"></i> Connexion
+                    </h2>
+                    <form action="#" method="post">
+                        <div class="form-group mb-3">
+                            <label for="login" class="form-label">
+                                <i class="fas fa-user"></i> Login:
+                            </label>
+                            <input type="text" id="login" name="login" class="form-control" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock"></i> Password:
+                            </label>
+                            <input type="password" id="password" name="password" class="form-control" required>
+                        </div>
+                        <?php if ($verif) { ?>
+                            <div class="alert alert-danger text-center">
+                                <i class="fas fa-exclamation-circle"></i> Login ou mot de passe incorrect
+                            </div>
+                        <?php } ?>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-sign-in-alt"></i> Se connecter
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" class="form-control" required>
-        </div>
-        <?php if ($verif) { ?>
-            <div class="alert alert-danger text-center">Login ou mot de passe incorrect</div>
-        <?php } ?>
-        <button type="submit" class="btn btn-primary">Login</button>
-    </form>
+    </div>
 </div>
+
+<!-- Styles pour améliorer l'apparence -->
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        color: #333;
+    }
+
+    .form-label {
+        font-weight: 500;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+
+    .fa-sign-in-alt, .fa-user, .fa-lock, .fa-exclamation-circle {
+        margin-right: 8px;
+    }
+</style>

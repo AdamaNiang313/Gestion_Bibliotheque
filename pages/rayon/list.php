@@ -30,3 +30,58 @@ $rayons = mysqli_query($connexion, $sql);
         </tbody>
     </table>
 </div>
+
+<!-- Styles for table and buttons -->
+<style>
+    .table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 20px 0;
+        font-size: 1em;
+        text-align: left;
+    }
+
+    .table th, .table td {
+        padding: 12px 15px;
+    }
+
+    .table thead th {
+        background-color: #343a40;
+        color: #ffffff;
+    }
+
+    .table tbody tr {
+        border-bottom: 1px solid #dddddd;
+    }
+
+    .table tbody tr:nth-of-type(even) {
+        background-color: #f3f3f3;
+    }
+
+    .table tbody tr:last-of-type {
+        border-bottom: 2px solid #343a40;
+    }
+
+    .btn {
+        margin-right: 5px;
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        border: none;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border: none;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+    }
+
+    .btn i {
+        margin-right: 5px;
+    }
+</style>

@@ -1,5 +1,4 @@
 <?php
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['password'];
@@ -42,6 +41,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
+<!-- Inclure Font Awesome via CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <style>
     .container {
         max-width: 600px;
@@ -51,39 +53,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         text-align: center;
         margin-bottom: 30px;
         color: #343a40;
+        font-size: 2rem;
     }
     .form-group label {
         font-weight: bold;
         color: #495057;
+        margin-bottom: 10px;
     }
     .form-control {
         border-radius: 5px;
         border: 1px solid #ced4da;
         padding: 10px;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
     .form-control:focus {
         border-color: #80bdff;
-        box-shadow: 0 0 5px rgba(128, 189, 255, 0.5);
+        box-shadow: 0 0 8px rgba(128, 189, 255, 0.6);
     }
     .btn-primary {
         background-color: #007bff;
         border: none;
-        padding: 10px 20px;
+        padding: 12px 20px;
         font-size: 16px;
         border-radius: 5px;
         width: 100%;
         margin-top: 20px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
     }
     .btn-primary:hover {
         background-color: #0056b3;
+        transform: scale(1.02);
     }
-    .fa-lock, .fa-camera {
+    .fa-lock, .fa-camera, .fa-save {
         margin-right: 10px;
+    }
+    .alert {
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+    .alert-warning {
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+        color: #856404;
+    }
+    .form-text {
+        font-size: 0.875rem;
+        color: #6c757d;
     }
 </style>
 
 <div class="container">
-    <h2>Changement de mot de passe et photo de profil</h2>
+    <h2><i class="fas fa-key"></i> Changement de mot de passe et photo de profil</h2>
     <form action="?action=validPassword" method="POST" enctype="multipart/form-data">
         <div class="form-group">
             <label for="new_password"><i class="fas fa-lock"></i> Nouveau mot de passe:</label>
