@@ -288,10 +288,26 @@
         if ($_GET['action'] == "listExemplaire") {
             require_once './pages/RP/list.php';
         }
+        
+            // Gestion de la suppression
+        if ($_GET['action'] === 'deleteExemplaire') {
+                $code = $_GET['code'];
+                $sql_delete = "DELETE FROM exemplaire WHERE code = $code";
+                $stmt = $connexion->prepare($sql_delete);
+                $stmt->bind_param("s", $code);
+
+                if ($stmt->execute()) {
+                    // Redirige vers la liste après la suppression
+                    header('Location: index.php?action=listExemplaire');
+                    exit;
+                } else {
+                    echo "<div class='alert alert-danger'>Erreur lors de la suppression de l'exemplaire.</div>";
+                }
+        }
 
         //Gestion emprunt adherant
         if ($_GET['action'] == "listEmprunt") {
-            require_once './pages/emprunt/list.php';
+            require_once './pages/adherant/list.php';
         }
 
         // Déconnexion

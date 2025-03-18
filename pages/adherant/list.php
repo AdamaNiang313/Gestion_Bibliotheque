@@ -103,12 +103,7 @@ function formatDateFrench($date) {
     </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <!-- Bouton Ajouter -->
-        <a class="btn btn-success mb-3" href="?action=addExemplaire">
-            <i class="fas fa-plus"></i> Ajouter un Nouveau Livre
-        </a>
-
+    <div class="container mt-4">    
         <!-- Liste des livres -->
         <div class="row g-3">
             <?php for ($i = 0; $i < count($livresArray); $i++) { ?>
@@ -125,8 +120,8 @@ function formatDateFrench($date) {
                             <span class="badge bg-primary mb-2"><i class="fas fa-calendar-alt"></i> Édition: <?= formatDateFrench($livresArray[$i]['date_edition']) ?></span>
                             <h5 class="card-title mt-2"><i class="fas fa-book"></i> <?= htmlspecialchars($livresArray[$i]['titre']) ?></h5>
                             <p class="card-text"><i class="fas fa-check-circle"></i> Disponibles: <?= htmlspecialchars($livresArray[$i]['disponible_count']) ?></p>
-                            <a class="btn btn-danger" href="?action=emprunter">
-                                <i class="fas fa-trash"></i> Emprunter
+                            <a class="btn btn-danger" href="?action=emprunter&&code=<?= $row['code'] ?>">
+                            <i class="fas fa-plus"></i> Emprunter
                             </a>
                         </div>
                     </div>

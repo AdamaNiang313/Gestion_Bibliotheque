@@ -103,7 +103,7 @@ function formatDateFrench($date) {
     </style>
 </head>
 <body>
-    <div class="container mt-4">
+<div class="container mt-4">
         <!-- Bouton Ajouter -->
         <a class="btn btn-success mb-3" href="?action=addExemplaire">
             <i class="fas fa-plus"></i> Ajouter un Nouveau Livre
@@ -125,7 +125,7 @@ function formatDateFrench($date) {
                             <span class="badge bg-primary mb-2"><i class="fas fa-calendar-alt"></i> Édition: <?= formatDateFrench($livresArray[$i]['date_edition']) ?></span>
                             <h5 class="card-title mt-2"><i class="fas fa-book"></i> <?= htmlspecialchars($livresArray[$i]['titre']) ?></h5>
                             <p class="card-text"><i class="fas fa-check-circle"></i> Disponibles: <?= htmlspecialchars($livresArray[$i]['disponible_count']) ?></p>
-                            <a class="btn btn-danger" href="?action=deleteExemplaire">
+                            <a class="btn btn-danger" href="?action=deleteExemplaire&&code=<?= $livresArray[$i]['code'] ?>">
                                 <i class="fas fa-trash"></i> Supprimer
                             </a>
                         </div>
@@ -134,7 +134,6 @@ function formatDateFrench($date) {
             <?php } ?>
         </div>
     </div>
-
     <!-- Bootstrap JS (optionnel) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
