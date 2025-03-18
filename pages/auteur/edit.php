@@ -1,6 +1,6 @@
 <div class="container w-50 mt-5 p-4 shadow rounded bg-light">
     <form action="?action=updateAuteur" method="POST">
-        <input type="text" name="code" value="<?= $auteur['code'] ?>" hidden>
+        <input type="text" name="id" value="<?= $auteur['id'] ?>" hidden>
         <div class="mb-4">
             <label for="nom" class="form-label fw-bold"><i class="fas fa-user"></i> Nom :</label>
             <input type="text" name="nom" class="form-control p-2" value="<?= $auteur['nom'] ?>" required>

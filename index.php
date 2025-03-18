@@ -105,15 +105,15 @@
             require_once './pages/auteur/list.php';
         }
         if ($_GET['action'] == "deleteAuteur") {
-            $code = $_GET['code'];
-            $sql = "DELETE FROM auteur WHERE code = $code";
+            $id = $_GET['id'];
+            $sql = "DELETE FROM auteur WHERE id = $id";
             mysqli_query($connexion, $sql);
             header('location:index.php?action=listAuteur');
             exit();
         }
         if ($_GET['action'] == "editAuteur") {
-            $code = $_GET['code'];
-            $sql = "SELECT * FROM auteur WHERE code = $code";
+            $id = $_GET['id'];
+            $sql = "SELECT * FROM auteur WHERE id = $id";
             $result = mysqli_query($connexion, $sql);
             if ($result) {
                 $auteur = mysqli_fetch_assoc($result);
@@ -123,11 +123,11 @@
             require_once './pages/auteur/edit.php';
         }
         if ($_GET['action'] == "updateAuteur") {
-            $code = $_POST['code'];
+            $id = $_POST['id'];
             $nom = $_POST['nom'];
             $prenom = $_POST['prenom'];
             $profession = $_POST['profession'];
-            $sql = "UPDATE auteur SET nom = '$nom', prenom = '$prenom', profession = '$profession' WHERE code = $code";
+            $sql = "UPDATE auteur SET nom = '$nom', prenom = '$prenom', profession = '$profession' WHERE id = $id";
             if (mysqli_query($connexion, $sql)) {
                 header('Location: index.php?action=listAuteur');
                 exit();
@@ -178,7 +178,7 @@
             require_once './pages/auth/changePasswordAndLogin.php';
         }
 
-        // Gestion des livres
+        // GESTION DES LIVRES
         if ($_GET['action'] == "addLivre") {
             require_once './pages/livres/add.php';
         }
@@ -210,7 +210,7 @@
             $auteur = htmlspecialchars($_POST['auteur']);
             $description = htmlspecialchars($_POST['description']);
             $date_publication = $_POST['date_publication'];
-            $image = $livre['image']; // Conserver l'image actuelle par défaut
+            $image = $livre['image'];
 
             // Gestion de l'upload de l'image
             if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
@@ -250,16 +250,16 @@
             require_once './pages/rayon/list.php';
         }
         if ($_GET['action'] == "deleteRayon") {
-            $code = $_GET['code'];
-            $sql = "DELETE FROM rayon WHERE code = $code";
+            $id = $_GET['id'];
+            $sql = "DELETE FROM rayon WHERE id = $id";
             mysqli_query($connexion, $sql);
             header('Location: index.php?action=listRayon');
             exit();
 
         }
         if ($_GET['action'] == "editRayon") {
-            $code = $_GET['code'];
-            $sql = "SELECT * FROM rayon WHERE code = $code";
+            $id = $_GET['id'];
+            $sql = "SELECT * FROM rayon WHERE id = $id";
             $result = mysqli_query($connexion, $sql);
             if ($result) {
                 $rayon = mysqli_fetch_assoc($result);
@@ -269,9 +269,9 @@
             require_once './pages/rayon/edit.php';
         }
         if ($_GET['action'] == "updateRayon") {
-            $code = $_POST['code'];
+            $id = $_POST['id'];
             $libelle = htmlspecialchars($_POST['libelle']);
-            $sql = "UPDATE rayon SET libelle = '$libelle' WHERE code = $code";
+            $sql = "UPDATE rayon SET libelle = '$libelle' WHERE id = $id";
             if (mysqli_query($connexion, $sql)) {
                 header('Location: index.php?action=listRayon');
                 exit();
@@ -281,35 +281,49 @@
             require_once './pages/rayon/list.php';
         }
 
-        // Gestion des exemplaires RP
+        // Gestion des exemplaires RP(Exemplaire)
+
         if ($_GET['action'] == "addExemplaire") {
-            require_once './pages/RP/add.php';
+            require_once './pages/RP(Exemplaire)/add.php';
         }
         if ($_GET['action'] == "listExemplaire") {
-            require_once './pages/RP/list.php';
+            require_once './pages/RP(Exemplaire)/list.php';
         }
         
             // Gestion de la suppression
         if ($_GET['action'] === 'deleteExemplaire') {
-                $code = $_GET['code'];
-                $sql_delete = "DELETE FROM exemplaire WHERE code = $code";
-                $stmt = $connexion->prepare($sql_delete);
-                $stmt->bind_param("s", $code);
-
-                if ($stmt->execute()) {
-                    // Redirige vers la liste après la suppression
-                    header('Location: index.php?action=listExemplaire');
-                    exit;
-                } else {
-                    echo "<div class='alert alert-danger'>Erreur lors de la suppression de l'exemplaire.</div>";
-                }
+                $id = $_GET['id'];
+                $sql_delete = "DELETE FROM exemplaire WHERE id = $id";
+                mysqli_query($connexion, $sql_delete);
+                header('Location: index.php?action=listExemplaire');
         }
 
         //Gestion emprunt adherant
+        /*if ($_GET['action'] == "addEmprunt") {
+            require_once './pages/adherant/add.php';
+        }
+        if ($_GET['action'] == "listAdherent") {
+            require_once './pages/adherant/list.php';
+        }
+        if ($_GET['action'] == "deleteAdherent") {
+            $id = $_GET['id'];
+            $sql = "DELETE FROM adherent WHERE id = $id";
+            mysqli_query($connexion, $sql);
+            header('location:index.php?action=listAdherent');
+            exit();
+        }
+        if ($_GET['action'] == "editAdherent") {
+            $id = $_GET['id'];
+            $sql = "SELECT * FROM adherent WHERE id = $id";
+            $result = mysqli_query($connexion, $sql);
+            if ($result) {
+                $adherent = mysqli_fetch_assoc($
         if ($_GET['action'] == "listEmprunt") {
             require_once './pages/adherant/list.php';
         }
-
+        if ($_GET['action'] == "emprunter") {
+            require_once './pages/adherant/add.php';
+        }*/
         // Déconnexion
         if ($_GET['action'] == "deconnexion") {
             session_destroy();

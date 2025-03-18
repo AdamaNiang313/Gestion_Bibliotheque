@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label for="id_a" class="form-label fw-bold"><i class="fas fa-user"></i> Auteur :</label>
             <select id="id_a" name="id_a" class="form-control p-2" required>
                 <?php while ($auteur = mysqli_fetch_assoc($auteurs)) { ?>
-                    <option value="<?= $auteur['code'] ?>" <?= ($auteur['code'] == $livre['id_a']) ? 'selected' : '' ?>>
+                    <option value="<?= $auteur['id'] ?>" <?= ($auteur['id'] == $livre['id_a']) ? 'selected' : '' ?>>
                         <?= $auteur['nom'] ?> <?= $auteur['prenom'] ?>
                     </option>
                 <?php } ?>
@@ -81,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label for="id_r" class="form-label fw-bold"><i class="fas fa-archive"></i> Rayon :</label>
             <select id="id_r" name="id_r" class="form-control p-2" required>
                 <?php while ($rayon = mysqli_fetch_assoc($rayons)) { ?>
-                    <option value="<?= $rayon['code'] ?>" <?= ($rayon['code'] == $livre['id_r']) ? 'selected' : '' ?>>
+                    <option value="<?= $rayon['id'] ?>" <?= ($rayon['id'] == $livre['id_r']) ? 'selected' : '' ?>>
                         <?= $rayon['libelle'] ?>
                     </option>
                 <?php } ?>

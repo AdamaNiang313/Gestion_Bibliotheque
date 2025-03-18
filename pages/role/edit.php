@@ -3,12 +3,11 @@
         <!-- Champ caché pour l'ID -->
         <input type="text" name="id" value="<?= $role['id'] ?>" hidden>
 
-        <!-- Champ Libellé -->
+        <!-- Champ Libellé --> 
         <div class="mb-4">
             <label for="libelle" class="form-label fw-bold"><i class="fas fa-tag"></i> Nom :</label>
             <input type="text" name="libelle" class="form-control p-2" value="<?= $role['libelle'] ?>" required>
         </div>
-
         <!-- Boutons -->
         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
             <button type="submit" class="btn btn-primary me-md-2">

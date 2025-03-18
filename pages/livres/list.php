@@ -3,8 +3,8 @@
 // Récupérer la liste des livres avec leurs auteurs et rayons
 $sql = "SELECT l.id, l.titre, l.date_edition, l.photo, a.nom AS auteur_nom, a.prenom AS auteur_prenom, r.libelle AS rayon_libelle
         FROM livre l
-        JOIN auteur a ON l.id_a = a.code
-        JOIN rayon r ON l.id_r = r.code";
+        JOIN auteur a ON l.id_a = a.id
+        JOIN rayon r ON l.id_r = r.id";
 $livres = mysqli_query($connexion, $sql);
 ?>
 

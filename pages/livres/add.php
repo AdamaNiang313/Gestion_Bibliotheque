@@ -69,7 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label for="id_a"><i class="fas fa-user"></i> Auteur:</label>
             <select id="id_a" name="id_a" class="form-control" required>
                 <?php while ($auteur = mysqli_fetch_assoc($auteurs)) { ?>
-                    <option value="<?= $auteur['code'] ?>"><?= $auteur['nom'] ?> <?= $auteur['prenom'] ?></option>
+                    <option value="<?= $auteur['id'] ?>"><?= $auteur['nom'] ?> <?= $auteur['prenom'] ?></option>
                 <?php } ?>
             </select>
         </div>
@@ -77,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label for="id_r"><i class="fas fa-archive"></i> Rayon:</label>
             <select id="id_r" name="id_r" class="form-control" required>
                 <?php while ($rayon = mysqli_fetch_assoc($rayons)) { ?>
-                    <option value="<?= $rayon['code'] ?>"><?= $rayon['libelle'] ?></option>
+                    <option value="<?= $rayon['id'] ?>"><?= $rayon['libelle'] ?></option>
                 <?php } ?>
             </select>
         </div>

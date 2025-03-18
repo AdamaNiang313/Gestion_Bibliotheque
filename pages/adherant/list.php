@@ -1,11 +1,12 @@
 <?php
 // Connexion à la base de données (assure-toi que $connexion est déjà défini)
 $sql = "SELECT l.titre, l.date_edition, 
-               COUNT(e.code) AS disponible_count,
-               MIN(e.photo) AS photo
+               COUNT(e.id) AS disponible_count,
+               MIN(e.photo) AS photo,
+               e.id
         FROM livre l
         LEFT JOIN exemplaire e ON l.id = e.id_l AND e.statut = 'disponible'
-        GROUP BY l.titre, l.date_edition";
+        GROUP BY l.titre, l.date_edition, e.id";
 $livres = mysqli_query($connexion, $sql);
 
 // Vérifie si la requête a réussi
@@ -26,19 +27,27 @@ function formatDateFrench($date) {
     setlocale(LC_TIME, 'fr_FR.UTF-8');
     return strftime('%d %B %Y', strtotime($date));
 }
+
+// Gestion de l'emprunt
+if (isset($_GET['action']) && $_GET['action'] === 'emprunter' && isset($_GET['id'])) {
+    $id = $_GET['id'];
+
+    // Mettre à jour le statut de l'exemplaire
+    $sql_update = "UPDATE exemplaire SET statut = 'emprunté' WHERE id = ?";
+    $stmt = $connexion->prepare($sql_update);
+    $stmt->bind_param("s", $id);
+
+    if ($stmt->execute()) {
+        // Rediriger vers la liste après l'emprunt
+        header('Location: index.php?action=listEmprunt');
+        exit;
+    } else {
+        echo "<div class='alert alert-danger'>Erreur lors de l'emprunt du livre.</div>";
+    }
+}
 ?>
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion de la Bibliothèque</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Styles personnalisés -->
+
     <style>
         body {
             background: linear-gradient(135deg, #6a11cb, #2575fc);
@@ -101,8 +110,7 @@ function formatDateFrench($date) {
             border-radius: 20px;
         }
     </style>
-</head>
-<body>
+
     <div class="container mt-4">    
         <!-- Liste des livres -->
         <div class="row g-3">
@@ -120,8 +128,8 @@ function formatDateFrench($date) {
                             <span class="badge bg-primary mb-2"><i class="fas fa-calendar-alt"></i> Édition: <?= formatDateFrench($livresArray[$i]['date_edition']) ?></span>
                             <h5 class="card-title mt-2"><i class="fas fa-book"></i> <?= htmlspecialchars($livresArray[$i]['titre']) ?></h5>
                             <p class="card-text"><i class="fas fa-check-circle"></i> Disponibles: <?= htmlspecialchars($livresArray[$i]['disponible_count']) ?></p>
-                            <a class="btn btn-danger" href="?action=emprunter&&code=<?= $row['code'] ?>">
-                            <i class="fas fa-plus"></i> Emprunter
+                            <a class="btn btn-danger" href="?action=emprunter&id=<?= $livresArray[$i]['id'] ?>">
+                                <i class="fas fa-plus"></i> Emprunter
                             </a>
                         </div>
                     </div>
@@ -130,7 +138,4 @@ function formatDateFrench($date) {
         </div>
     </div>
 
-    <!-- Bootstrap JS (optionnel) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+  

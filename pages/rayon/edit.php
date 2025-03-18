@@ -2,19 +2,19 @@
 require_once 'database.php';
 
 // Récupérer les informations du rayon à modifier
-if (isset($_GET['code'])) {
-    $code = $_GET['code'];
-    $sql = "SELECT * FROM rayon WHERE code = $code";
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+    $sql = "SELECT * FROM rayon WHERE id = $id";
     $result = mysqli_query($connexion, $sql);
     $rayon = mysqli_fetch_assoc($result);
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $code = $_POST['code'];
+    $id = $_POST['id'];
     $libelle = htmlspecialchars($_POST['libelle']);
 
     // Mise à jour du rayon dans la base de données
-    $sql = "UPDATE rayon SET libelle = '$libelle' WHERE code = $code";
+    $sql = "UPDATE rayon SET libelle = '$libelle' WHERE id = $id";
     if (mysqli_query($connexion, $sql)) {
         header('location:index.php?action=listRayon');
         exit;
@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="container w-50 mt-5 p-4 shadow rounded bg-light">
     <h2 class="mb-4"><i class="fas fa-edit"></i> Modifier un rayon</h2>
     <form action="?action=editRayon" method="POST">
-        <input type="hidden" name="code" value="<?= $rayon['code'] ?>">
+        <input type="hidden" name="id" value="<?= $rayon['id'] ?>">
         <div class="mb-4">
             <label for="libelle" class="form-label fw-bold"><i class="fas fa-tag"></i> Libellé :</label>
             <input type="text" id="libelle" name="libelle" class="form-control p-2" value="<?= $rayon['libelle'] ?>" required>
