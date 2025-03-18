@@ -28,7 +28,7 @@ function formatDateFrench($date) {
 }
 ?>
 
-    <style>
+    <!-- <style>
         body {
             background: linear-gradient(135deg, #6a11cb, #2575fc);
             color: #333;
@@ -89,7 +89,7 @@ function formatDateFrench($date) {
             padding: 8px 12px;
             border-radius: 20px;
         }
-    </style>
+    </style> -->
 
     <div class="container mt-4">
         <a class="btn btn-success mb-3" href="?action=addExemplaire">

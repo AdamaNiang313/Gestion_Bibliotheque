@@ -1,87 +1,54 @@
+
+
 <?php
-require_once 'database.php';
+$id_adherent = $_SESSION['id']; 
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $date_debut = $_POST["date_debut"];
-    $date_fin = $_POST["date_fin"];
-    $id_livre = $_POST["id_livre"];
+$sql = "SELECT l.titre, l.date_edition, COUNT(e.id) AS disponible_count, MIN(e.photo) AS photo, l.id AS id_livre
+        FROM livre l
+        LEFT JOIN exemplaire e ON l.id = e.id_l AND e.statut = 'disponible'
+        GROUP BY l.titre, l.date_edition, l.id";
+$livres = mysqli_query($connexion, $sql);
 
-    // Insertion de l'emprunt dans la base de données
-    $sql = "INSERT INTO emprunt (date_debut, date_fin, id_livre) VALUES ('$date_debut', '$date_fin', '$id_livre')";
-    if (mysqli_query($connexion, $sql)) {
-        // Mettre à jour le statut du livre
-        $sql_update = "UPDATE exemplaire SET statut = 'emprunté' WHERE id = '$id_livre'";
-        mysqli_query($connexion, $sql_update);
+if (!$livres) {
+    die("Erreur dans la requête SQL : " . mysqli_error($connexion));
+}
 
-        header('location:index.php?action=listEmprunt');
-        exit;
+$tabLivres = [];
+while ($row = mysqli_fetch_assoc($livres)) {
+    $tabLivres[] = $row;
+}
+
+if (isset($_GET['action']) && $_GET['action'] === 'emprunter' && isset($_GET['id'])) {
+    $id_livre = $_GET['id'];
+    
+    $sql_find_exemplaire = "SELECT id FROM exemplaire WHERE id_l = ? AND statut = 'disponible' LIMIT 1";
+    $stmt_find = mysqli_prepare($connexion, $sql_find_exemplaire);
+    mysqli_stmt_bind_param($stmt_find, "i", $id_livre);
+    mysqli_stmt_execute($stmt_find);
+    $result_find = mysqli_stmt_get_result($stmt_find);
+    
+    if ($row = mysqli_fetch_assoc($result_find)) {
+        $id_exemplaire = $row['id'];
+        $date_emprunt = date('Y-m-d');  
+        $date_fin = date('Y-m-d', strtotime('+2 weeks'));
+
+        $sql_emprunt = "INSERT INTO emprunt (id_adherent, date_debut, date_fin, id_exemplaire) VALUES (?, ?, ?, ?)";
+        $stmt_emprunt = mysqli_prepare($connexion, $sql_emprunt);
+        mysqli_stmt_bind_param($stmt_emprunt, "issi", $id_adherent, $date_emprunt, $date_fin, $id_exemplaire);
+
+        if (mysqli_stmt_execute($stmt_emprunt)) {
+            $sql_update = "UPDATE exemplaire SET statut = 'emprunté' WHERE id = ?";
+            $stmt_update = mysqli_prepare($connexion, $sql_update);
+            mysqli_stmt_bind_param($stmt_update, "i", $id_exemplaire);
+            mysqli_stmt_execute($stmt_update);
+            
+            header('Location: index.php?action=listEmprunt');
+            exit;
+        } else {
+            echo "<div class='alert alert-danger'>Erreur lors de l'emprunt du livre.</div>";
+        }
     } else {
-        echo "<div class='alert alert-danger'>Erreur lors de l'ajout de l'emprunt.</div>";
+        echo "<div class='alert alert-warning'>Aucun exemplaire disponible pour ce livre.</div>";
     }
 }
 ?>
-
-<div class="container w-50 mt-5 p-4 shadow rounded bg-light">
-    <h2 class="mb-4"><i class="fas fa-plus"></i> Entrer les deux dates</h2>
-    <form action="?action=addEmprunt" method="POST">
-        <div class="mb-4">
-            <label for="date_debut" class="form-label fw-bold"><i class="fas fa-tag"></i> Date début :</label>
-            <input type="date" id="date_debut" name="date_debut" class="form-control p-2" required>
-        </div>
-        <div class="mb-4">
-            <label for="date_fin" class="form-label fw-bold"><i class="fas fa-tag"></i> Date fin :</label>
-            <input type="date" id="date_fin" name="date_fin" class="form-control p-2" required>
-        </div>
-        <div class="mb-4">
-            <label for="id_livre" class="form-label fw-bold"><i class="fas fa-book"></i> id du livre :</label>
-            <input type="text" id="id_livre" name="id_livre" class="form-control p-2" required>
-        </div>
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-            <button type="submit" class="btn btn-primary me-md-2">
-                <i class="fas fa-save"></i> Enregistrer
-            </button>
-            <a href="?action=listEmprunt" class="btn btn-danger">
-                <i class="fas fa-times-circle"></i> Annuler
-            </a>
-        </div>
-    </form>
-</div>
-
-<!-- Styles for form and buttons -->
-<style>
-    .form-label {
-        font-weight: bold;
-        color: #495057;
-    }
-
-    .form-control {
-        border-radius: 5px;
-        border: 1px solid #ced4da;
-        padding: 10px;
-    }
-
-    .form-control:focus {
-        border-color: #80bdff;
-        box-shadow: 0 0 5px rgba(128, 189, 255, 0.5);
-    }
-
-    .btn-primary {
-        background-color: #007bff;
-        border: none;
-        padding: 10px 20px;
-        font-size: 16px;
-        border-radius: 5px;
-    }
-
-    .btn-danger {
-        background-color: #dc3545;
-        border: none;
-        padding: 10px 20px;
-        font-size: 16px;
-        border-radius: 5px;
-    }
-
-    .btn i {
-        margin-right: 5px;
-    }
-</style>

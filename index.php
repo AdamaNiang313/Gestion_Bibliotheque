@@ -29,7 +29,7 @@
     if (isset($_GET['action']) && !empty($_SESSION)) {
         require_once 'shared/navbar.php';
 
-        // Gestion des rôles
+        // GESTION DES ROLES
         if ($_GET['action'] == 'addRole') {
             require_once 'pages/role/add.php';
         }
@@ -62,7 +62,12 @@
             }
         }
 
-        // Gestion des utilisateurs
+        // GESTION DES USERS
+
+
+
+
+        // GESTION DES USERS
         if ($_GET['action'] == "listUser") {
             require_once './pages/user/list.php';
         }
@@ -97,7 +102,12 @@
             exit();
         }
 
-        // Gestion des auteurs
+
+
+
+
+
+        // GESTION DES ACTEURS
         if ($_GET['action'] == "addAuteur") {
             require_once './pages/auteur/add.php';
         }
@@ -134,14 +144,16 @@
             }
         }
 
-        // Changer le mot de passe
+
+
+
+        // CHANGER MOT DE PASSE
         if ($_GET['action'] == "validPassword") {
             $id = $_SESSION['id'];
             $count = $_SESSION['count'];
             $password = $_POST['password'];
             $new_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
             $image = null;
-            // Handle image upload
             if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
                 $image = basename($_FILES['photo']['name']);
                 $temp_name = $_FILES['photo']['tmp_name'];
@@ -168,7 +180,6 @@
                     echo "<div class='alert alert-warning'>Type de fichier non autorisé. Formats acceptés : JPEG, PNG, GIF.</div>";
                 }
             }
-    // Insertion du livre dans la base de données
             $sql = "UPDATE user SET password = '$new_password',photo = $image, count = 1 WHERE id = '$id'";
             mysqli_query($connexion, $sql);
             header('location:index.php?action=listUser');
@@ -177,6 +188,10 @@
         if ($_GET['action'] == "changePasswordAndLogin") {
             require_once './pages/auth/changePasswordAndLogin.php';
         }
+
+
+
+
 
         // GESTION DES LIVRES
         if ($_GET['action'] == "addLivre") {
@@ -212,7 +227,6 @@
             $date_publication = $_POST['date_publication'];
             $image = $livre['image'];
 
-            // Gestion de l'upload de l'image
             if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
                 $file_name = $_FILES['image']['name'];
                 $temp_name = $_FILES['image']['tmp_name'];
@@ -242,7 +256,11 @@
             }
         }
 
-        // Gestion des rayons
+
+
+
+
+        // GESTION DES RAYONS
         if ($_GET['action'] == "addRayon") {
             require_once './pages/rayon/add.php';
         }
@@ -281,8 +299,10 @@
             require_once './pages/rayon/list.php';
         }
 
-        // Gestion des exemplaires RP(Exemplaire)
 
+
+
+        // GESTION DES EXEMPLAIRE RP(Exemplaire)
         if ($_GET['action'] == "addExemplaire") {
             require_once './pages/RP(Exemplaire)/add.php';
         }
@@ -298,33 +318,32 @@
                 header('Location: index.php?action=listExemplaire');
         }
 
-        //Gestion emprunt adherant
-        /*if ($_GET['action'] == "addEmprunt") {
+
+
+
+
+        //GESTION ADHERANT
+        if ($_GET['action'] == "addEmprunt") {
             require_once './pages/adherant/add.php';
         }
-        if ($_GET['action'] == "listAdherent") {
-            require_once './pages/adherant/list.php';
-        }
-        if ($_GET['action'] == "deleteAdherent") {
-            $id = $_GET['id'];
-            $sql = "DELETE FROM adherent WHERE id = $id";
-            mysqli_query($connexion, $sql);
-            header('location:index.php?action=listAdherent');
-            exit();
-        }
-        if ($_GET['action'] == "editAdherent") {
-            $id = $_GET['id'];
-            $sql = "SELECT * FROM adherent WHERE id = $id";
-            $result = mysqli_query($connexion, $sql);
-            if ($result) {
-                $adherent = mysqli_fetch_assoc($
         if ($_GET['action'] == "listEmprunt") {
             require_once './pages/adherant/list.php';
         }
+        if ($_GET['action'] == "deleteEmprunt") {
+            $id = $_GET['id'];
+            $sql = "DELETE FROM emprunt WHERE id = $id";
+            mysqli_query($connexion, $sql);
+            header('location:index.php?action=listEmprunt');
+            exit();
+        }
         if ($_GET['action'] == "emprunter") {
             require_once './pages/adherant/add.php';
-        }*/
-        // Déconnexion
+        }
+
+
+
+
+        // DECONNECTION
         if ($_GET['action'] == "deconnexion") {
             session_destroy();
             header('location:index.php');
