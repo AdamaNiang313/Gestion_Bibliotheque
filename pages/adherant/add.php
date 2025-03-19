@@ -1,6 +1,10 @@
-
-
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+session_start(); // Ajout de session_start()
+require_once 'database.php'; // Inclure la connexion à la base de données
+
 $id_adherent = $_SESSION['id']; 
 
 $sql = "SELECT l.titre, l.date_edition, COUNT(e.id) AS disponible_count, MIN(e.photo) AS photo, l.id AS id_livre

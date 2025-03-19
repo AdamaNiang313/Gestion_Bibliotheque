@@ -182,7 +182,14 @@
             }
             $sql = "UPDATE user SET password = '$new_password',photo = $image, count = 1 WHERE id = '$id'";
             mysqli_query($connexion, $sql);
-            header('location:index.php?action=listUser');
+            if($_SESSION['id_r'] == 1){
+                header('location:index.php?action=listUser');
+            }
+            if($_SESSION['id_r'] == 2){
+                header('location:index.php?action=listExemplaire');
+            }else{
+                header('location:index.php?action=listEmprunt');
+            }
             exit();
         }
         if ($_GET['action'] == "changePasswordAndLogin") {

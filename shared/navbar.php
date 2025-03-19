@@ -15,7 +15,7 @@
   <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
     <!-- Liens à gauche -->
     <ul class="navbar-nav gap-3">
-      <?php if($_SESSION['id_r'] == 1){ ?>
+      <?php if($_SESSION['id_r'] == 1){ //RB ?>
       <li class="nav-item">
         <a href="?action=listUser" class="btn btn-outline-light btn-hover-animation" role="button" data-bs-toggle="button">
           <i class="fas fa-users"></i> Liste users
@@ -41,13 +41,13 @@
           <i class="fas fa-archive"></i> Liste Rayons
         </a>
       </li>
-      <?php }else if($_SESSION['id_r'] == 2){ ?>
+      <?php }else if($_SESSION['id_r'] == 2){ //RP ?>
       <li class="nav-item">
         <a href="?action=listExemplaire" class="btn btn-outline-light btn-hover-animation" role="button" data-bs-toggle="button">
           <i class="fas fa-copy"></i> Liste exemplaires
         </a>
       </li>
-      <?php }else{ ?>
+      <?php }else{ //Adherant ?>
         <a href="?action=listEmprunt" class="btn btn-outline-light btn-hover-animation" role="button" data-bs-toggle="button">
           <i class="fas fa-book-open"></i> Mes emprunts
         </a>
