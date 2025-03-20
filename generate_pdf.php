@@ -1,8 +1,8 @@
 <?php
-require('./fpdf/fpdf.php'); // Inclure FPDF
-require_once 'database.php'; // Inclure la connexion à la base de données
+require('./fpdf/fpdf.php'); 
+require_once 'database.php'; 
 
-session_start(); // Démarrer la session
+session_start();
 
 $id_exemplaire = $_GET['id'] ?? null;
 $id_adherent = $_SESSION['id'];

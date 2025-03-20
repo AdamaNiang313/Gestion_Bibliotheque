@@ -41,7 +41,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (empty($error_message)) {
-        // Requête d'insertion
         $sql = "INSERT INTO exemplaire (date_enregistre, id_l, statut, photo) VALUES ('$date_enregistre', '$id_l', '$statut', '$photo')";
 
         if (mysqli_query($connexion, $sql)) {
@@ -52,7 +51,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $error_message = "Erreur lors de l'ajout de l'exemplaire.";
         }
     }
-    
 }
 ?>
 

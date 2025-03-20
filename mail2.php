@@ -53,10 +53,11 @@ if ($id_exemplaire) {
         $mail->isHTML(true);
         $mail->Subject = "Confirmation d'emprunt";
         $mail->Body    = "<h3>Bonjour {$adherent['prenom']} {$adherent['nom']},</h3>
-                          <p>Vous avez emprunté le livre <strong>{$livre['titre']}</strong> le <strong>" . date('Y-m-d') . "</strong>.</p>
-                          <p>Date de retour prévue : <strong>" . date('Y-m-d', strtotime('+14 days')) . "</strong>.</p>
-                          <p>Merci de respecter la date de retour.</p>
-                          <p><a href='generate_pdf.php?id=$id_exemplaire'>Télécharger le rapport en PDF</a></p>";
+                        <p>Vous avez emprunté le livre <strong>{$livre['titre']}</strong> le <strong>" . date('Y-m-d') . "</strong>.</p>
+                        <p>Date de retour prévue : <strong>" . date('Y-m-d', strtotime('+14 days')) . "</strong>.</p>
+                        <p>Vous avez actuellement <strong>" . ($nb_emprunts + 1) . "</strong> emprunts en cours. La limite est de 3 emprunts.</p>
+                        <p>Merci de respecter la date de retour.</p>
+                        <p><a href='generate_pdf.php?id=$id_exemplaire'>Télécharger le rapport en PDF</a></p>";
 
         if ($mail->send()) {
             echo "<div class='alert alert-success'>Email envoyé avec succès.</div>";

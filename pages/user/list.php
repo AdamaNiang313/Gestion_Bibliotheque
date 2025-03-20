@@ -6,7 +6,7 @@ $users = mysqli_query($connexion, $sql);
 ?>
 
 <div class="container mt-5">
-    <a class="btn btn-success mb-3" href="?action=addUser"><i class="fas fa-user-plus"></i> Nouveau</a>
+    <a class="btn btn-dark" href="?action=addUser"><i class="fas fa-user-plus"></i> Nouveau</a>
     <table class="table table-bordered">
         <thead class="thead-dark">
             <tr>

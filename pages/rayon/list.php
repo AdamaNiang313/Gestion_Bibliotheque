@@ -7,7 +7,7 @@ $rayons = mysqli_query($connexion, $sql);
 ?>
 
 <div class="container mt-5">
-    <a class="btn btn-success mb-3" href="?action=addRayon"><i class="fas fa-plus"></i> Ajouter un rayon</a>
+    <a class="btn btn-dark" href="?action=addRayon"><i class="fas fa-plus"></i> Ajouter un rayon</a>
     <table class="table table-bordered">
         <thead class="thead-dark">
             <tr>

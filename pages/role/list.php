@@ -5,7 +5,7 @@
 
 ?>
 <div class="container mt-5">
-    <a class="btn btn-success mb-3" href="?action=addRole"><i class="fas fa-plus"></i> Nouveau</a>
+    <a class="btn btn-dark" href="?action=addRole"><i class="fas fa-plus"></i> Nouveau</a>
     <table class="table table-bordered">
         <thead class="thead-dark">
             <tr>
