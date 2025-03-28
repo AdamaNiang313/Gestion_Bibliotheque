@@ -4,7 +4,7 @@
 
 
 ?>
-<div class="container mt-5">
+<div class="container mt-5 pt-5">
     <a class="btn btn-dark " href="?action=addAuteur"><i class="fas fa-user-plus"></i> Nouveau</a>
     <table class="table table-bordered">
     <thead class="thead-dark">

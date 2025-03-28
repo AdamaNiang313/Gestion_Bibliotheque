@@ -5,7 +5,7 @@ $sql = "SELECT u.id, u.nom, u.prenom, u.login, u.email, u.photo, r.libelle
 $users = mysqli_query($connexion, $sql);
 ?>
 
-<div class="container mt-5">
+<div class="container mt-5 pt-5">
     <a class="btn btn-dark" href="?action=addUser"><i class="fas fa-user-plus"></i> Nouveau</a>
     <table class="table table-bordered">
         <thead class="thead-dark">

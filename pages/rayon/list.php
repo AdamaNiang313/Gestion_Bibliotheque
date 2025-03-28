@@ -6,7 +6,7 @@ $sql = "SELECT * FROM rayon";
 $rayons = mysqli_query($connexion, $sql);
 ?>
 
-<div class="container mt-5">
+<div class="container mt-5 py-5">
     <a class="btn btn-dark" href="?action=addRayon"><i class="fas fa-plus"></i> Ajouter un rayon</a>
     <table class="table table-bordered">
         <thead class="thead-dark">

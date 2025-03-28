@@ -1,120 +1,207 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Vérification de l'authentification et du rôle (2 = adhérent)
 
-require_once 'database.php'; // Inclure la connexion à la base de données
+$id_adherent = $_SESSION['id'];
 
-$id_adherent = $_SESSION['id']; 
-
-// Vérifier le nombre d'emprunts en cours de l'adhérent
-$sql_count_emprunts = "SELECT COUNT(*) AS nb_emprunts FROM emprunt WHERE id_adherent = ? AND date_fin IS NULL";
-$stmt_count = mysqli_prepare($connexion, $sql_count_emprunts);
+// Compter les emprunts validés en cours
+$sql_count = "SELECT COUNT(*) AS nb FROM emprunt 
+             WHERE id_adherent = ? AND statut = 'valide' AND date_fin IS NULL";
+$stmt_count = mysqli_prepare($connexion, $sql_count);
 mysqli_stmt_bind_param($stmt_count, 'i', $id_adherent);
 mysqli_stmt_execute($stmt_count);
 $result_count = mysqli_stmt_get_result($stmt_count);
-$row_count = mysqli_fetch_assoc($result_count);
-$nb_emprunts = $row_count['nb_emprunts'];
+$nb_emprunts = mysqli_fetch_assoc($result_count)['nb'];
 
-// Récupérer la liste des livres disponibles
-$sql = "SELECT l.id AS id_livre, l.titre, l.date_edition, COUNT(e.id) AS disponible_count, MIN(e.photo) AS photo
-        FROM livre l
-        LEFT JOIN exemplaire e ON l.id = e.id_l AND e.statut = 'disponible'
-        GROUP BY l.id, l.titre, l.date_edition";
-$livres = mysqli_query($connexion, $sql);
-
-if (!$livres) {
-    die("Erreur dans la requête SQL : " . mysqli_error($connexion));
-}
-
-$tabLivres = [];
-while ($row = mysqli_fetch_assoc($livres)) {
-    $tabLivres[] = $row;
-}
-
-// Gestion de l'emprunt
-if (isset($_GET['action']) && $_GET['action'] === 'emprunter' && isset($_GET['id'])) {
-    $id_livre = $_GET['id'];
-
-    // Vérifier si l'adhérent a déjà 3 emprunts en cours
+// Gestion de la demande d'emprunt
+if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['emprunter'])) {
+    $livre_id = intval($_GET['emprunter']);
+    
     if ($nb_emprunts >= 3) {
-        echo "<div class='alert alert-warning'>Vous avez déjà emprunté 3 livres. Vous ne pouvez pas emprunter plus de livres pour le moment.</div>";
+        $_SESSION['message'] = 'Vous avez atteint la limite de 3 emprunts';
+        $_SESSION['message_type'] = 'warning';
     } else {
-        // Sélectionner un exemplaire disponible
-        $sql_exemplaire = "SELECT id FROM exemplaire WHERE id_l = ? AND statut = 'disponible' LIMIT 1";
-        $stmt_exemplaire = mysqli_prepare($connexion, $sql_exemplaire);
-        mysqli_stmt_bind_param($stmt_exemplaire, 'i', $id_livre);
-        mysqli_stmt_execute($stmt_exemplaire);
-        $result_exemplaire = mysqli_stmt_get_result($stmt_exemplaire);
-        $exemplaire = mysqli_fetch_assoc($result_exemplaire);
-        
-        if ($exemplaire) {
-            $id_exemplaire = $exemplaire['id'];
-            $date_emprunt = date('Y-m-d');
-
-            // Insérer l'emprunt dans la base de données
-            $sql_emprunt = "INSERT INTO emprunt (id_adherent, date_debut, id_exemplaire) 
-                            VALUES (?, ?, ?)";
-            $stmt_emprunt = mysqli_prepare($connexion, $sql_emprunt);
-            mysqli_stmt_bind_param($stmt_emprunt, 'isi', $id_adherent, $date_emprunt, $id_exemplaire);
+        mysqli_begin_transaction($connexion);
+        try {
+            // Trouver un exemplaire disponible
+            $sql_ex = "SELECT id FROM exemplaire 
+                      WHERE id_l = ? AND statut = 'disponible' 
+                      LIMIT 1 FOR UPDATE";
+            $stmt_ex = mysqli_prepare($connexion, $sql_ex);
+            mysqli_stmt_bind_param($stmt_ex, 'i', $livre_id);
+            mysqli_stmt_execute($stmt_ex);
+            $exemplaire = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_ex));
             
-            if (mysqli_stmt_execute($stmt_emprunt)) {
-                // Mettre à jour le statut de l'exemplaire
-                $sql_update = "UPDATE exemplaire SET statut = 'emprunté' WHERE id = ?";
-                $stmt_update = mysqli_prepare($connexion, $sql_update);
-                mysqli_stmt_bind_param($stmt_update, 'i', $id_exemplaire);
-                mysqli_stmt_execute($stmt_update);
+            if ($exemplaire) {
+                // Créer la demande
+                $sql_emp = "INSERT INTO emprunt 
+                           (id_adherent, id_exemplaire, date_debut, date_fin, statut) 
+                           VALUES (?, ?, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 'en_attente')";
+                $stmt_emp = mysqli_prepare($connexion, $sql_emp);
+                mysqli_stmt_bind_param($stmt_emp, 'ii', $id_adherent, $exemplaire['id']);
                 
-                // Redirection vers mail2.php pour envoyer l'e-mail
-                header("Location: ./../mail2.php?id=$id_exemplaire");
-                exit;
+                if (mysqli_stmt_execute($stmt_emp)) {
+                    // Réserver l'exemplaire
+                    $sql_upd = "UPDATE exemplaire SET statut = 'réservé' WHERE id = ?";
+                    $stmt_upd = mysqli_prepare($connexion, $sql_upd);
+                    mysqli_stmt_bind_param($stmt_upd, 'i', $exemplaire['id']);
+                    mysqli_stmt_execute($stmt_upd);
+                    
+                    mysqli_commit($connexion);
+                    $_SESSION['message'] = 'Demande envoyée au gestionnaire';
+                    $_SESSION['message_type'] = 'success';
+                    
+                    // Envoyer notification au gestionnaire
+                    require_once __DIR__.'/../../mail.php';
+                    $emprunt_id = mysqli_insert_id($connexion);
+                    notifierGestionnaireNouvelEmprunt($emprunt_id, $connexion);
+                }
             } else {
-                echo "<div class='alert alert-danger'>Erreur lors de l'emprunt du livre.</div>";
+                throw new Exception("Aucun exemplaire disponible");
             }
-        } else {
-            echo "<div class='alert alert-warning'>Aucun exemplaire disponible pour ce livre.</div>";
+        } catch (Exception $e) {
+            mysqli_rollback($connexion);
+            $_SESSION['message'] = 'Erreur: ' . $e->getMessage();
+            $_SESSION['message_type'] = 'danger';
         }
     }
+    header("Location: index.php?action=listExemplaire");
+    exit();
 }
+
+// Récupérer les livres disponibles avec leurs exemplaires
+$sql = "SELECT l.id, l.titre, a.nom AS auteur, r.libelle AS rayon,
+       (SELECT COUNT(*) FROM exemplaire WHERE id_l = l.id AND statut = 'disponible') AS disponible,
+       (SELECT photo FROM exemplaire WHERE id_l = l.id AND photo IS NOT NULL LIMIT 1) AS photo
+       FROM livre l
+       JOIN auteur a ON l.id_a = a.id
+       JOIN rayon r ON l.id_r = r.id
+       GROUP BY l.id
+       HAVING disponible > 0
+       ORDER BY l.titre";
+$livres = mysqli_query($connexion, $sql);
 ?>
 
-<!-- Affichage des livres -->
-<div class="container mt-4">
-<h3 class="offset-5">Histoire</h3>
-    <div class="row g-3">
-        <?php foreach ($tabLivres as $livre) { ?>
-            <div class="col-md-3 mb-4">
-                <div class="card h-100">
-                    <?php if (!empty($livre['photo'])) { ?>
-                        <img src="uploads/<?= htmlspecialchars($livre['photo']) ?>" class="card-img-top" alt="Couverture du livre" style="height: 150px; object-fit: cover;">
-                    <?php } else { ?>
-                        <div class="text-center py-4 bg-light">
-                            <span>Aucune photo disponible</span>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogue des livres</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+        }
+        .card-book {
+            transition: transform 0.3s ease;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 100%;
+        }
+        .card-book:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .book-cover {
+            height: 250px;
+            object-fit: cover;
+            width: 100%;
+        }
+        .badge-available {
+            background-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <main class="container py-4 mt-5">
+        <!-- Messages d'alerte -->
+        <?php if (isset($_SESSION['message'])): ?>
+            <div class="alert alert-<?= $_SESSION['message_type'] ?> alert-dismissible fade show">
+                <?= $_SESSION['message'] ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <?php unset($_SESSION['message'], $_SESSION['message_type']); ?>
+        <?php endif; ?>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">
+                <i class="fas fa-book-open me-2"></i>Catalogue des livres
+            </h2>
+            <div>
+                <span class="badge bg-primary me-2">
+                    <i class="fas fa-bookmark me-1"></i>
+                    <?= $nb_emprunts ?> / 3 emprunts
+                </span>
+                <a href="mes_emprunts.php" class="btn btn-outline-primary">
+                    <i class="fas fa-list me-1"></i>Mes emprunts
+                </a>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+            <?php while ($livre = mysqli_fetch_assoc($livres)): ?>
+            <div class="col">
+                <div class="card card-book h-100">
+                    <!-- Couverture du livre - MODIFICATION ICI -->
+                    <?php if (!empty($livre['photo'])): ?>
+                        <img src="/uploads/<?= htmlspecialchars($livre['photo']) ?>" 
+                             class="book-cover" 
+                             alt="Couverture de <?= htmlspecialchars($livre['titre']) ?>">
+                    <?php else: ?>
+                        <div class="book-cover bg-light d-flex align-items-center justify-content-center">
+                            <i class="fas fa-book fa-4x text-secondary"></i>
                         </div>
-                    <?php } ?>
-                    <div class="card-body text-center">
-                        <span class="badge bg-primary mb-2"><i class="fas fa-calendar-alt"></i> Édition: <?= htmlspecialchars($livre['date_edition']) ?></span>
-                        <h5 class="card-title mt-2"><i class="fas fa-book"></i> <?= htmlspecialchars($livre['titre']) ?></h5>
-                        <p class="card-text"><i class="fas fa-check-circle"></i> Disponibles: <?= htmlspecialchars($livre['disponible_count']) ?></p>
-                        <?php if ($livre['disponible_count'] > 0 && $nb_emprunts < 3) { ?>
-                            <a class="btn btn-danger" href="#" onclick="confirmerEmprunt('<?= $livre['id_livre'] ?>')">
-                            <i class="fas fa-plus"></i> Emprunter
-                            </a>
-                        <?php } elseif ($livre['disponible_count'] > 0 && $nb_emprunts >= 3) { ?>
-                            <button class="btn btn-secondary" disabled>Limite d'emprunt atteinte</button>
-                        <?php } else { ?>
-                            <button class="btn btn-secondary" disabled>Indisponible</button>
-                        <?php } ?>
+                    <?php endif; ?>
+                    
+                    <div class="card-body">
+                        <h5 class="card-title"><?= htmlspecialchars($livre['titre']) ?></h5>
+                        <p class="card-text text-muted small mb-2">
+                            <i class="fas fa-user-edit me-1"></i>
+                            <?= htmlspecialchars($livre['auteur']) ?>
+                        </p>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-secondary">
+                                <?= htmlspecialchars($livre['rayon']) ?>
+                            </span>
+                            <span class="badge bg-success">
+                                <?= $livre['disponible'] ?> disponible(s)
+                            </span>
+                        </div>
+                        
+                        <!-- Bouton d'emprunt -->
+                        <div class="d-grid">
+                            <?php if ($nb_emprunts < 3): ?>
+                                <a href="index.php?action=emprunter&id=<?= $livre['id'] ?>" 
+                                    class="btn btn-primary"
+                                    onclick="return confirm('Voulez-vous vraiment emprunter <?= htmlspecialchars($livre['titre']) ?> ?')">
+                                    <i class="fas fa-hand-paper me-1"></i>Demander
+                                </a>
+                            <?php else: ?>
+                                <button class="btn btn-outline-secondary" disabled>
+                                    <i class="fas fa-ban me-1"></i>Quota atteint
+                                </button>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>
-        <?php } ?>
-    </div>
-</div>
+            <?php endwhile; ?>
+        </div>
+    </main>
 
-<script>
-function confirmerEmprunt(idLivre) {
-    if (confirm("Êtes-vous sûr de vouloir emprunter ce livre ?")) {
-        window.location.href = "?action=emprunter&id=" + idLivre;
-    }
-}
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Animation au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card-book');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.classList.add('animate__animated', 'animate__fadeInUp');
+            });
+        });
+    </script>
+</body>
+</html>

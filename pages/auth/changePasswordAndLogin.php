@@ -4,13 +4,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $confirm_password = $_POST['password'];
     $id = $_SESSION['id'];
     $id_r = $_SESSION['id_r'];
-    $photo = null;
+    $photo = $_SESSION['photo'];
 
     if ($new_password !== $confirm_password) {
         echo "<div class='alert alert-danger'>Les mots de passe ne correspondent pas.</div>";
     } else {
         $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-
         if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
             $file_name = basename($_FILES['photo']['name']);
             $temp_name = $_FILES['photo']['tmp_name'];

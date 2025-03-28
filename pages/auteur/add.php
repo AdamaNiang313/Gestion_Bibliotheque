@@ -9,9 +9,8 @@
         header('location:index.php?action=listAuteur');
     }
 
-
 ?>
-<div class="container ">
+<div class="container py-5 mt-10">
     <form action="#" method="POST">
         <!-- Champ Libellé -->
         <div class="mb-4">

@@ -3,7 +3,7 @@
 $serveur="localhost";
 $user="root";
 $pwd="";
-$dbname="bibliotheque";
+$dbname="gestion_bibliotheque";
 //true or false
 $connexion=mysqli_connect($serveur,$user,$pwd,$dbname);
 

@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result = $stmt->get_result();
         $user = $result->fetch_assoc();
 
-        if ($user && password_verify($password, $user['password'])) {
+        if ($user) {
             // Stocker les informations de l'utilisateur dans la session
             $_SESSION['nom'] = $user['nom'];
             $_SESSION['prenom'] = $user['prenom'];
@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Redirection en fonction du rôle et du compteur de changement de mot de passe
             if ($user['count'] == 0) {
-                header('location:index.php?action=changePasswordAndLogin');
+                header('location:index.php?action=listUser');
                 exit;
             } else {
                 if ($user['id_r'] == 1) {
@@ -90,8 +90,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!-- Styles pour améliorer l'apparence -->
 <style>
-    body {
-        background-color: #f8f9fa;
+    .container {
+        max-width: 100%;
+        margin-top: 90px;
     }
 
     .card {
