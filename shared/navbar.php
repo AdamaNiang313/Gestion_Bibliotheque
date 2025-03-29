@@ -285,6 +285,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="?action=listStatistiques" class="nav-link">
+                            <i class="fas fa-book"></i>
+                            <span>ChartJS</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="?action=listRayon" class="nav-link">
                             <i class="fas fa-archive"></i>
                             <span>Rayons</span>
@@ -333,12 +339,7 @@
                               <span>Liste exemplaires</span>
                           </a>
                       </li>
-                      <li class="nav-item">
-                          <a href="?action=addExemplaire" class="nav-link">
-                              <i class="fas fa-plus"></i>
-                              <span>Ajouter exemplaire</span>
-                          </a>
-                      </li>
+                     
                   </ul>
               <?php endif; ?>
         </div>

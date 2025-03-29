@@ -308,6 +308,15 @@ if (isset($_GET['action']) && !empty($_SESSION)) {
         exit();
     }
 
+
+    //Gestionnaire
+    if ($_GET['action'] == "listStatistiques") {
+        require_once './pages/gestionnaire/statistiques.php';
+    }
+
+
+
+
 // GESTION ADHERANT
 
 
