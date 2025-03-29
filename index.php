@@ -17,10 +17,9 @@ session_start(); // Démarre la session
 require_once 'database.php';
 
 
+
 if (isset($_GET['action']) && !empty($_SESSION)) {
     require_once 'shared/navbar.php';
-
-    
 
     // GESTION DES ROLES
     if ($_GET['action'] == 'addRole') {
@@ -172,9 +171,9 @@ if (isset($_GET['action']) && !empty($_SESSION)) {
         if ($_SESSION['id_r'] == 1) { // Gestionnaire
         header('location:index.php?action=listUser');
     } elseif ($_SESSION['id_r'] == 2) { // Adhérent
-        header('location:index.php?action=listExemplaire');
+        require_once './pages/adherant/list.php';
     } else { // RP
-        header('location:index.php?action=listExemplaire');
+        require_once './pages/RP/list.php';
     }
     exit();
     }
